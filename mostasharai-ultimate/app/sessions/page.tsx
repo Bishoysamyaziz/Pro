@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, or } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
@@ -40,6 +40,9 @@ export default function SessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [fetching, setFetching] = useState(true);
   const [filter, setFilter] = useState<'all' | 'scheduled' | 'in_progress' | 'completed'>('all');
+
+  // eslint-disable-next-line react-hooks/purity
+  const currentTime = useMemo(() => Date.now(), []);
 
   useEffect(() => {
     if (!user) return;
@@ -175,7 +178,7 @@ export default function SessionsPage() {
             const StatusIcon = cfg.icon;
             const isLive = session.status === 'in_progress';
             const canJoin = session.status === 'scheduled' || isLive;
-            const date = session.scheduledAt?.toDate?.() || new Date(session.scheduledAt || Date.now());
+            const date = session.scheduledAt?.toDate?.() || new Date(session.scheduledAt || currentTime);
 
             return (
               <div key={session.id}

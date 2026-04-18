@@ -74,7 +74,7 @@ export default function ConsultationPage() {
       }
       setLoading(false);
     });
-  }, [id]);
+  }, [id, timerActive]);
 
   // Chat messages
   useEffect(() => {

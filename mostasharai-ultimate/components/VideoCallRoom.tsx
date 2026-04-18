@@ -34,7 +34,7 @@ export default function VideoCallRoom({ sessionId, userId, displayName, onLeave 
   useEffect(() => {
     initVideo();
     return () => { cleanup(); };
-  }, []);
+  }, [initVideo, cleanup]);
 
   const initVideo = async () => {
     try {

@@ -65,7 +65,7 @@ export default function HomePage() {
       setLoadingMore(false);
     };
     loadMore();
-  }, [inView]);
+  }, [inView, hasMore, lastDoc, loadingMore]);
 
   // Videos
   useEffect(() => {

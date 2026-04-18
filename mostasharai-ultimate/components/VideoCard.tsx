@@ -20,6 +20,8 @@ const VideoCard = memo(({ video }: Props) => {
   const [showComments, setShowComments] = useState(false);
   const [viewed, setViewed] = useState(false);
 
+  const viewedRef = useRef(false);
+
   const { ref: inViewRef, inView } = useInView({ threshold: 0.6 });
 
   const isLiked = user ? video.likes.includes(user.uid) : false;
@@ -27,12 +29,20 @@ const VideoCard = memo(({ video }: Props) => {
   useEffect(() => {
     if (!videoRef.current) return;
     if (inView) {
-      videoRef.current.play().then(() => { setPlaying(true); if (!viewed) { setViewed(true); updateDoc(doc(db, 'videos', video.id), { views: increment(1) }); } }).catch(() => {});
+      videoRef.current.play().then(() => { 
+        setPlaying(true); 
+        if (!viewedRef.current) { 
+          viewedRef.current = true; 
+          setViewed(true); 
+          updateDoc(doc(db, 'videos', video.id), { views: increment(1) }); 
+        } 
+      }).catch(() => {});
     } else {
       videoRef.current.pause();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlaying(false);
     }
-  }, [inView]);
+  }, [inView, video.id]);
 
   const handleLike = async () => {
     if (!user) return;
