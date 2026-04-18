@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+@theme {
+  --color-bg: #050505;
+  --color-surface: #0a0a0a;
+  --color-surface-2: #111111;
+  --color-border: #1a1a1a;
+  --color-border-2: #222222;
+  --color-accent: #00f2ff;
+  --color-accent-dim: #00b8c4;
+  --color-accent-glow: rgba(0, 242, 255, 0.15);
+  --color-text: #e5e5e5;
+  --color-text-2: #a3a3a3;
+  --color-text-3: #666666;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-live: #ff3b30;
+  --font-sans: 'Tajawal', sans-serif;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Light mode */
+.light {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-2: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-2: #475569;
+  --color-text-3: #94a3b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-border-2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent-dim); }
+
+/* Accent glow */
+.glow { box-shadow: 0 0 20px var(--color-accent-glow), 0 0 40px rgba(0,242,255,0.05); }
+.text-glow { text-shadow: 0 0 20px rgba(0,242,255,0.5); }
+
+/* Glass effect */
+.glass {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Live pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+.live-pulse { animation: live-pulse 1.5s ease-in-out infinite; }
+
+/* Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Stream Video SDK overrides */
+.str-video { background: transparent !important; }
+.str-video__call-controls { background: rgba(10,10,10,0.9) !important; border-radius: 16px !important; }

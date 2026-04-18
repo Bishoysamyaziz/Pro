@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function getUserData() { return get(/databases/$(database)/documents/users/$(uid())).data; }
+    function isAdmin() { return isAuth() && getUserData().role == 'admin_owner'; }
+    function notBanned() { return isAuth() && getUserData().isBanned != true; }
+
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && uid() == userId;
+      allow update: if (isAuth() && uid() == userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isAuth() && notBanned() && request.resource.data.userId == uid();
+      allow update: if isAuth() && (resource.data.userId == uid() || isAdmin());
+      allow delete: if isAuth() && (resource.data.userId == uid() || isAdmin());
+    }
+
+    match /posts/{postId}/comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuth() && notBanned();
+      allow delete: if isAuth() && (resource.data.userId == uid() || isAdmin());
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuth() && notBanned();
+      allow delete: if isAuth() && (resource.data.userId == uid() || isAdmin());
+    }
+
+    match /videos/{videoId} {
+      allow read: if true;
+      allow create: if isAuth() && notBanned();
+      allow update: if isAuth() && (resource.data.userId == uid() || isAdmin());
+      allow delete: if isAuth() && (resource.data.userId == uid() || isAdmin());
+    }
+
+    match /consultations/{sessionId} {
+      allow read: if isAuth() && (
+        resource.data.expertId == uid() ||
+        resource.data.clientId == uid() ||
+        resource.data.isLive == true ||
+        isAdmin()
+      );
+      allow create: if isAuth() && notBanned();
+      allow update: if isAuth() && (
+        resource.data.expertId == uid() ||
+        resource.data.clientId == uid() ||
+        isAdmin()
+      );
+
+      match /chatMessages/{msgId} {
+        allow read, create: if isAuth();
+      }
+    }
+
+    match /depositRequests/{reqId} {
+      allow read: if isAuth() && (resource.data.userId == uid() || isAdmin());
+      allow create: if isAuth() && notBanned();
+      allow update: if isAdmin();
+    }
+
+    match /transactions/{txId} {
+      allow read: if isAuth() && (resource.data.userId == uid() || isAdmin());
+      allow create: if isAuth();
+    }
+
+    match /notifications/{notifId} {
+      allow read: if isAuth() && resource.data.userId == uid();
+      allow create: if isAuth();
+      allow update: if isAuth() && resource.data.userId == uid();
+      allow delete: if isAuth() && (resource.data.userId == uid() || isAdmin());
+    }
+
+    match /owner_commands/{cmdId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /telemetry_events/{evtId} {
+      allow create: if isAuth();
+      allow read: if isAdmin();
+    }
+
+    match /session_notes/{noteId} {
+      allow read, write: if isAuth();
+    }
+  }
+}
